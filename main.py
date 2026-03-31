@@ -10,7 +10,7 @@ Auteur: Sam BERTAUX (Lumastor)(sam.bertaux.pro@gmail.com / lumino110908@gmail.co
 TEST.py(Ɔ) 2026
 Description : Saisissez la description puis « Tab »
 Créé le :  mardi 17 mars 2026 à 10:39:43 
-Dernière modification : mardi 31 mars 2026 à 10:43:02
+Dernière modification : mardi 31 mars 2026 à 12:00:30
 """
 
 # ---------------------------------------------------------
@@ -26,7 +26,8 @@ import network
 import socket
 from machine import Pin
 import time
-from patedeporc import Servo_test, forward, backward
+from DouzeDouchesDouces import Servo_test
+from helias import backward, forward
 
 # ---------------------------------------------------------
 # CONFIGURATION DE LA LED INTERNE
@@ -128,7 +129,7 @@ button {{
 
 <body>
 
-<h1>ArachnoBerry controller WebPage</h1>
+<h1>ArachnoBerry controller</h1>
 <p>Etat LED : <strong>{state}</strong></p>
 
 <div class="container">
@@ -155,7 +156,19 @@ button {{
 const PICO_IP = window.location.hostname;
 
 // Envoi commande au Pico
+let lastSentTime = 0;
+let lastCommand = "";
+const DELAY = 200; // 200ms = 5 commandes/sec
+
 function sendCommand(cmd) {{
+    const now = Date.now();
+
+    // évite spam + doublons trop rapides
+    if (cmd === lastCommand && (now - lastSentTime) < DELAY) return;
+
+    lastSentTime = now;
+    lastCommand = cmd;
+
     fetch(`http://${{PICO_IP}}/cmd?move=${{cmd}}`)
         .catch(err => console.log("Erreur:", err));
 }}
@@ -173,6 +186,7 @@ window.addEventListener("gamepaddisconnected", () => {{
     gamepadIndex = null;
     document.getElementById("status").innerText = "Manette deconnectee";
 }});
+
 
 function pollGamepad() {{
     if (gamepadIndex !== null) {{
