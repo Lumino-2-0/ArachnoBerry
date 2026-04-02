@@ -10,7 +10,7 @@ Auteur: Sam BERTAUX (Lumastor)(sam.bertaux.pro@gmail.com / lumino110908@gmail.co
 TEST.py(Ɔ) 2026
 Description : Saisissez la description puis « Tab »
 Créé le :  mardi 17 mars 2026 à 10:39:43 
-Dernière modification : mardi 31 mars 2026 à 12:00:30
+Dernière modification : jeudi 2 avril 2026 à 11:40:15
 """
 
 # ---------------------------------------------------------
@@ -27,8 +27,8 @@ import socket
 from machine import Pin
 import time
 from DouzeDouchesDouces import Servo_test
-from helias import backward, forward
-
+from helias import backward, forward, turn_right, turn_left, attack
+                                                                                           
 # ---------------------------------------------------------
 # CONFIGURATION DE LA LED INTERNE
 # ---------------------------------------------------------
@@ -146,6 +146,7 @@ button {{
 
 <div>
     <button onclick="sendCommand('servo')">Test Servo</button>
+    <button onclick="sendCommand('attack')">Attaque</button>
 </div>
 
 <div class="status" id="status">
@@ -201,13 +202,14 @@ function pollGamepad() {{
 
         if (y < -0.5) sendCommand("forward");
         else if (y > 0.5) sendCommand("backward");
-
-        if (x < -0.5) sendCommand("left");
+        else if (x < -0.5) sendCommand("left");
         else if (x > 0.5) sendCommand("right");
+        
 
-        if (gamepad.buttons[0].pressed) sendCommand("servo");
-        if (gamepad.buttons[1].pressed) sendCommand("ledon");
+        if (gamepad.buttons[2].pressed) sendCommand("servo");
+        if (gamepad.buttons[3].pressed) sendCommand("ledon");
         if (gamepad.buttons[2].pressed) sendCommand("ledoff");
+        if (gamepad.buttons[0].pressed) sendCommand("attack");
     }}
 
     requestAnimationFrame(pollGamepad);
@@ -272,11 +274,11 @@ while True:
 
     elif "left" in request:
         print("Gauche")
-        #turn_left()
+        turn_left()
 
     elif "right" in request:
         print("Droite")
-        #turn_right()
+        turn_right()
 
     elif "ledon" in request:
         led.value(1)
@@ -289,6 +291,10 @@ while True:
     elif "servo" in request:
         print("test servomoteurs en cours")
         Servo_test()      
+        
+    elif "attack" in request:
+        print("Attaque !")
+        attack()
         
     # -----------------------------------------------------
     # ENVOI DE LA PAGE HTML
