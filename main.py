@@ -10,7 +10,7 @@ Auteur: Sam BERTAUX (Lumastor)(sam.bertaux.pro@gmail.com / lumino110908@gmail.co
 TEST.py(Ɔ) 2026
 Description : Saisissez la description puis « Tab »
 Créé le :  mardi 17 mars 2026 à 10:39:43 
-Dernière modification : jeudi 2 avril 2026 à 11:40:15
+Dernière modification : jeudi 2 avril 2026 à 11:49:37
 """
 
 # ---------------------------------------------------------
