@@ -10,7 +10,7 @@ Auteur: Sam BERTAUX (Lumastor)(sam.bertaux.pro@gmail.com / lumino110908@gmail.co
 TEST.py(Ɔ) 2026
 Description : Saisissez la description puis « Tab »
 Créé le :  mardi 17 mars 2026 à 10:39:43 
-Dernière modification : jeudi 2 avril 2026 à 11:49:37
+Dernière modification : mardi 7 avril 2026 à 10:34:45
 """
 
 # ---------------------------------------------------------
@@ -208,7 +208,7 @@ function pollGamepad() {{
 
         if (gamepad.buttons[2].pressed) sendCommand("servo");
         if (gamepad.buttons[3].pressed) sendCommand("ledon");
-        if (gamepad.buttons[2].pressed) sendCommand("ledoff");
+        if (gamepad.buttons[1].pressed) sendCommand("ledoff");
         if (gamepad.buttons[0].pressed) sendCommand("attack");
     }}
 
