@@ -1,40 +1,21 @@
 """
- _______       _            _     _          ______        _                 _ 
-(_______)     (_)       _  (_)   | |        (____  \      (_)               | |
- _______  ____ _  ___ _| |_ _  __| |_____    ____)  ) ____ _ _____ ____   __| |
-|  ___  |/ ___) |/___|_   _) |/ _  | ___ |  |  __  ( / ___) (____ |  _ \ / _  |
-| |   | | |   | |___ | | |_| ( (_| | ____|  | |__)  ) |   | / ___ | | | ( (_| |
-|_|   |_|_|   |_(___/   \__)_|\____|_____)  |______/|_|   |_\_____|_| |_|\____|
+       _                     _             
+      | |                   (_)            
+      | |    _   _ _ __ ___  _ _ __   ___  
+      | |   | | | |  _   _ \| |  _ \ / _ \ 
+      | |___| |_| | | | | | | | | | | (_) |
+      |______\____|_| |_| |_|_|_| |_|\___/
     
 Auteur: Sam BERTAUX (Lumastor)(sam.bertaux.pro@gmail.com / lumino110908@gmail.com) 
-TEST.py(Ɔ) 2026
-Description : Saisissez la description puis « Tab »
-Créé le :  mardi 17 mars 2026 à 10:39:43 
-Dernière modification : mardi 7 avril 2026 à 10:34:45
+main.py(Ɔ) 2026
+Description : main du code
 """
-
-# ---------------------------------------------------------
-# IMPORTATION DES MODULES
-# ---------------------------------------------------------
-# network  -> gestion du Wi-Fi
-# socket   -> communication réseau (serveur web)
-# machine  -> accès au matériel (GPIO, LED…)
-# time     -> temporisations
-# ---------------------------------------------------------
-
 import network
 import socket
 from machine import Pin
 import time
 from DouzeDouchesDouces import Servo_test
-from helias import backward, forward, turn_right, turn_left, attack
-                                                                                           
-# ---------------------------------------------------------
-# CONFIGURATION DE LA LED INTERNE
-# ---------------------------------------------------------
-# Sur le Raspberry Pi Pico W, la LED intégrée
-# est accessible via le nom spécial "LED"
-# ---------------------------------------------------------
+from helias import backward, forward, turn_right, turn_left, attack           
 
 led = Pin("LED", Pin.OUT)   # OUT = sortie (on contrôle la LED)
 
@@ -42,9 +23,7 @@ led = Pin("LED", Pin.OUT)   # OUT = sortie (on contrôle la LED)
 # ---------------------------------------------------------
 # CONFIGURATION DU WIFI EN MODE POINT D'ACCES (AP)
 # ---------------------------------------------------------
-# Le Pico W va créer SON PROPRE réseau Wi-Fi
-# Les élèves pourront s’y connecter directement
-# ---------------------------------------------------------
+
 
 ssid = "PanierPianoPanierPiano"           # Nom du réseau Wi-Fi
 password = "labeillecoule"       # Mot de passe (8 caractères mini)
@@ -64,10 +43,7 @@ print("Adresse IP du Pico :", ap.ifconfig()[0])
 
 
 # ---------------------------------------------------------
-# FONCTION QUI GENERE LA PAGE HTML
-# ---------------------------------------------------------
-# Cette fonction construit une page web sous forme
-# de TEXTE (chaîne de caractères)
+# GENERE LA PAGE HTML
 # ---------------------------------------------------------
 
 def webpage():
@@ -81,135 +57,246 @@ def webpage():
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Controle Araignee Pico</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ArachnoBerry</title>
 
 <style>
+:root {{
+    --bg: #0f172a;
+    --card: #1e293b;
+    --accent: #38bdf8;
+    --accent2: #22c55e;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+}}
+
 body {{
-    font-family: Arial;
-    background: #111;
-    color: white;
-    text-align: center;
+    margin:0;
+    font-family: 'Segoe UI', system-ui;
+    background: radial-gradient(circle at top, #1e293b, #020617);
+    color: var(--text);
+    text-align:center;
 }}
 
 h1 {{
-    margin-top: 20px;
+    margin-top:20px;
+    font-size:28px;
+    letter-spacing:1px;
 }}
 
-.container {{
-    margin-top: 30px;
+.card {{
+    background: var(--card);
+    margin:20px;
+    padding:20px;
+    border-radius:20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}}
+
+.grid {{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:10px;
+    max-width:300px;
+    margin:20px auto;
 }}
 
 button {{
-    width: 120px;
-    height: 60px;
-    margin: 10px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
+    height:70px;
+    border:none;
+    border-radius:15px;
+    font-size:16px;
+    font-weight:bold;
+    color:white;
+    cursor:pointer;
+    transition:0.15s;
 }}
 
-.forward {{ background: green; }}
-.backward {{ background: red; }}
-.left {{ background: blue; }}
-.right {{ background: orange; }}
+button:active {{
+    transform: scale(0.95);
+}}
 
-.ledon {{ background: #0f0; color:black; }}
-.ledoff {{ background: #555; }}
+.forward {{ background: var(--accent2); grid-column:2; }}
+.backward {{ background: var(--danger); grid-column:2; }}
+.left {{ background: #3b82f6; }}
+.right {{ background: #f59e0b; }}
+
+.action {{
+    background: var(--accent);
+    margin:5px;
+    width:140px;
+}}
+
+.led-on {{ background:#22c55e; }}
+.led-off {{ background:#64748b; }}
 
 .status {{
-    margin-top: 20px;
-    font-size: 14px;
-    color: #0f0;
+    margin-top:10px;
+    font-size:14px;
+    opacity:0.8;
+}}
+
+.joystick {{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background: radial-gradient(circle, #334155, #020617);
+    margin:20px auto;
+    position:relative;
+}}
+
+.stick {{
+    width:40px;
+    height:40px;
+    background: var(--accent);
+    border-radius:50%;
+    position:absolute;
+    top:40px;
+    left:40px;
+}}
+
+footer {{
+    margin-top:30px;
+    padding:20px;
+    font-size:12px;
+    opacity:0.6;
+}}
+
+a {{
+    color: var(--accent);
+    text-decoration:none;
 }}
 </style>
 </head>
 
 <body>
 
-<h1>ArachnoBerry controller</h1>
-<p>Etat LED : <strong>{state}</strong></p>
+<h1>ArachnoBerry</h1>
 
-<div class="container">
-    <button class="forward" onclick="sendCommand('forward')">Avancer</button><br>
-    <button class="left" onclick="sendCommand('left')">Gauche</button>
-    <button class="right" onclick="sendCommand('right')">Droite</button><br>
-    <button class="backward" onclick="sendCommand('backward')">Reculer</button>
+<div class="card">
+    <p>LED : <strong>{state}</strong></p>
 </div>
 
-<div>
-    <button class="ledon" onclick="sendCommand('ledon')">LED ON</button>
-    <button class="ledoff" onclick="sendCommand('ledoff')">LED OFF</button>
+<!-- CONTROLES -->
+<div class="card">
+    <h3>Contrôles</h3>
+
+    <div class="grid">
+        <div></div>
+        <button class="forward" onclick="sendCommand('forward')">↑</button>
+        <div></div>
+
+        <button class="left" onclick="sendCommand('left')">←</button>
+        <div></div>
+        <button class="right" onclick="sendCommand('right')">→</button>
+
+        <div></div>
+        <button class="backward" onclick="sendCommand('backward')">↓</button>
+        <div></div>
+    </div>
 </div>
 
-<div>
-    <button onclick="sendCommand('servo')">Test Servo</button>
-    <button onclick="sendCommand('attack')">Attaque</button>
+<!-- ACTIONS -->
+<div class="card">
+    <h3>Actions</h3>
+
+    <button class="action" onclick="sendCommand('servo')">Test Servo</button>
+    <button class="action" onclick="sendCommand('attack')">Attaque</button>
 </div>
 
-<div class="status" id="status">
-    Manette: non detectee
+<!-- LED -->
+<div class="card">
+    <h3>LED</h3>
+
+    <button class="action led-on" onclick="sendCommand('ledon')">ON</button>
+    <button class="action led-off" onclick="sendCommand('ledoff')">OFF</button>
 </div>
+
+<!-- JOYSTICK VISUEL -->
+<div class="card">
+    <h3>Manette</h3>
+
+    <div class="joystick">
+        <div class="stick" id="stick"></div>
+    </div>
+
+    <div class="status" id="status">Manette non détectée</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <p>ArachnoBerry Controller</p>
+    <p>
+        <a href="https://github.com/Lumino-2-0/ArachnoBerry" target="_blank">
+        GitHub Project
+        </a>
+    </p>
+    <p>DIY Spider Robot - Pico W - 2026</p>
+</footer>
 
 <script>
 const PICO_IP = window.location.hostname;
 
-// Envoi commande au Pico
+// ================= ANTI-SPAM =================
 let lastSentTime = 0;
 let lastCommand = "";
-const DELAY = 200; // 200ms = 5 commandes/sec
+const DELAY = 200; // 200ms
 
 function sendCommand(cmd) {{
     const now = Date.now();
 
-    // évite spam + doublons trop rapides
     if (cmd === lastCommand && (now - lastSentTime) < DELAY) return;
 
     lastSentTime = now;
     lastCommand = cmd;
 
     fetch(`http://${{PICO_IP}}/cmd?move=${{cmd}}`)
-        .catch(err => console.log("Erreur:", err));
+        .catch(()=>{{}});
 }}
 
 // ================= GAMEPAD =================
-
 let gamepadIndex = null;
 
 window.addEventListener("gamepadconnected", (e) => {{
     gamepadIndex = e.gamepad.index;
-    document.getElementById("status").innerText = "Manette connectee";
+    document.getElementById("status").innerText = "Manette connectée";
 }});
 
 window.addEventListener("gamepaddisconnected", () => {{
     gamepadIndex = null;
-    document.getElementById("status").innerText = "Manette deconnectee";
+    document.getElementById("status").innerText = "Manette déconnectée";
 }});
 
+const stick = document.getElementById("stick");
+
+function updateStick(x,y){{
+    stick.style.left = (40 + x*30) + "px";
+    stick.style.top = (40 + y*30) + "px";
+}}
 
 function pollGamepad() {{
     if (gamepadIndex !== null) {{
-        const gamepad = navigator.getGamepads()[gamepadIndex];
-        if (!gamepad) return;
+        const gp = navigator.getGamepads()[gamepadIndex];
+        if (!gp) return;
 
-        let x = gamepad.axes[0];
-        let y = gamepad.axes[1];
+        let x = gp.axes[0];
+        let y = gp.axes[1];
 
+        // deadzone
         if (Math.abs(x) < 0.2) x = 0;
         if (Math.abs(y) < 0.2) y = 0;
+
+        updateStick(x,y);
 
         if (y < -0.5) sendCommand("forward");
         else if (y > 0.5) sendCommand("backward");
         else if (x < -0.5) sendCommand("left");
         else if (x > 0.5) sendCommand("right");
-        
 
-        if (gamepad.buttons[2].pressed) sendCommand("servo");
-        if (gamepad.buttons[3].pressed) sendCommand("ledon");
-        if (gamepad.buttons[1].pressed) sendCommand("ledoff");
-        if (gamepad.buttons[0].pressed) sendCommand("attack");
+        if (gp.buttons[0].pressed) sendCommand("attack");
+        if (gp.buttons[2].pressed) sendCommand("servo");
+        if (gp.buttons[3].pressed) sendCommand("ledon");
+        if (gp.buttons[1].pressed) sendCommand("ledoff");
     }}
 
     requestAnimationFrame(pollGamepad);
@@ -222,7 +309,6 @@ pollGamepad();
 </html>
 """
     return html
-
 
 # ---------------------------------------------------------
 # CREATION DU SERVEUR WEB
@@ -240,11 +326,8 @@ print("Serveur web en attente...")
 
 
 # ---------------------------------------------------------
-# BOUCLE PRINCIPALE
+# Attend les connexions d’un navigateur
 # ---------------------------------------------------------
-# Le Pico attend les connexions d’un navigateur
-# ---------------------------------------------------------
-
 
 
 while True:
@@ -261,7 +344,6 @@ while True:
     # -----------------------------------------------------
     # ANALYSE DE L’URL DEMANDEE
     # -----------------------------------------------------
-
     
     if "forward" in request:
         print("Avancer")
