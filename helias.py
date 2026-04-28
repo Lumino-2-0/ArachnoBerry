@@ -34,6 +34,17 @@ def set_leg3(h, v):
     
 
 
+def Servo_test():
+    pwm.servo_angle(0,0)
+    pwm.servo_angle(1,0)
+    time.sleep(0.5)
+    pwm.servo_angle(0,90)
+    pwm.servo_angle(1,90)
+    time.sleep(0.5)
+    pwm.servo_angle(0,180)
+    pwm.servo_angle(1,180)
+    time.sleep(0.5)
+
 # ================= POSITIONS =================
 
 def neutral():

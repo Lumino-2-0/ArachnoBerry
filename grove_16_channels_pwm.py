@@ -1,3 +1,5 @@
+import uasyncio as asyncio
+
 """
 grove_16_channels_pwm - Bibliothèque MicroPython pour la carte
 Grove 16-Channel PWM Driver (PCA9685) - Réf. 108020102
@@ -142,10 +144,46 @@ class Grove16PWM:
             angle:   Angle souhaité (0-180°).
         """
         angle = max(0, min(180, angle))
-        pulse_us = self._servo_min_us + \
+        pulse_us = self._servo_min_us + \r
                    (self._servo_max_us - self._servo_min_us) * angle / 180
         ticks = int(pulse_us * 4096 * self._freq / 1_000_000)
         self.set_pwm(channel, ticks)
+
+    async def async_servo_angle(self, channel, angle, duration_ms=0, steps=20):
+        """
+        Version async : positionne un servo avec possibilité de mouvement progressif.
+
+        Args:
+            channel:      Numéro du canal (0-15).
+            angle:        Angle cible (0-180°).
+            duration_ms:  Durée du mouvement (0 = instantané).
+            steps:        Nombre d'étapes pour interpolation.
+        """
+
+        angle = max(0, min(180, angle))
+
+        # Si pas d'animation → comportement immédiat
+        if duration_ms <= 0:
+            pulse_us = self._servo_min_us + \r
+                    (self._servo_max_us - self._servo_min_us) * angle / 180
+            ticks = int(pulse_us * 4096 * self._freq / 1_000_000)
+            self.set_pwm(channel, ticks)
+            return
+
+        # Animation progressive
+        # (on suppose qu’on part de l’angle actuel inconnu → option simple)
+        step_delay = duration_ms / steps
+
+        for i in range(steps + 1):
+            interp_angle = angle * i / steps
+
+            pulse_us = self._servo_min_us + \r
+                    (self._servo_max_us - self._servo_min_us) * interp_angle / 180
+            ticks = int(pulse_us * 4096 * self._freq / 1_000_000)
+
+            self.set_pwm(channel, ticks)
+
+            await asyncio.sleep_ms(int(step_delay))
 
     def servo_us(self, channel, pulse_us):
         """

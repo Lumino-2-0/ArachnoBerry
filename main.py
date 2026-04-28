@@ -14,8 +14,8 @@ import network
 import socket
 from machine import Pin
 import time
-from DouzeDouchesDouces import Servo_test
-from helias import backward, forward, turn_right, turn_left, attack           
+
+ASYNC = True
 
 led = Pin("LED", Pin.OUT)   # OUT = sortie (on contrôle la LED)
 
@@ -309,6 +309,13 @@ pollGamepad();
 </html>
 """
     return html
+
+
+
+if (ASYNC):
+    from helias_async import backward, forward, turn_right, turn_left, attack, Servo_test 
+else :
+    from helias import backward, forward, turn_right, turn_left, attack, Servo_test 
 
 # ---------------------------------------------------------
 # CREATION DU SERVEUR WEB
