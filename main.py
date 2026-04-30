@@ -6,9 +6,7 @@
       | |___| |_| | | | | | | | | | | (_) |
       |______\____|_| |_| |_|_|_| |_|\___/
     
-Auteur: Sam BERTAUX (Lumastor)(sam.bertaux.pro@gmail.com / lumino110908@gmail.com) 
-main.py(Ɔ) 2026
-Description : main du code
+Auteurs: Sam BERTAUX (Lumastor) + Morgant DESMARS (Dante3ee)
 """
 import network
 import socket
