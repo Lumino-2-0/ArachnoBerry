@@ -429,14 +429,6 @@ while True:
 
         except Exception as e:
             print("Erreur pause :", e)
-            
-    elif "doubleon" in request:
-        helias.Double = True
-        print("Mode Double ACTIVÉ")
-
-    elif "doubleoff" in request:
-        helias.Double = False
-        print("Mode Double DÉSACTIVÉ")
     
         
     # -----------------------------------------------------
