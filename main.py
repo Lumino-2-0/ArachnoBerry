@@ -203,10 +203,10 @@ a {{
 
     <input type="number" id="pauseTime" placeholder="Temps en ms" style="padding:10px; border-radius:10px; border:none; width:200px; font-size:16px;">
     <div style="margin-top:10px;">
-        <button class="action" onclick="document.getElementById('pauseTime').value=10">10 ms</button>
-        <button class="action" onclick="document.getElementById('pauseTime').value=20">20 ms</button>
+        <button class="action" onclick="document.getElementById('pauseTime').value=30">30 ms</button>
         <button class="action" onclick="document.getElementById('pauseTime').value=50">50 ms</button>
         <button class="action" onclick="document.getElementById('pauseTime').value=100">100 ms</button>
+        <button class="action" onclick="document.getElementById('pauseTime').value=500">500 ms</button>
     </div>
         
     <button class="action" style="margin-top:10px;" onclick="sendCommand('pauseTime=' + document.getElementById('pauseTime').value)">Envoyer</button>
@@ -430,6 +430,13 @@ while True:
         except Exception as e:
             print("Erreur pause :", e)
             
+    elif "doubleon" in request:
+        helias.Double = True
+        print("Mode Double ACTIVÉ")
+
+    elif "doubleoff" in request:
+        helias.Double = False
+        print("Mode Double DÉSACTIVÉ")
     
         
     # -----------------------------------------------------
