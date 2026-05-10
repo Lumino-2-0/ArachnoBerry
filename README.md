@@ -53,16 +53,18 @@ ArachnoBerry/
 
 ---
 
-## Mode Async vs Sync
+## Mode Async vs Sync (Déprécié)
 
 Dans `main.py` :
 
 ```python
-ASYNC = True
+ASYNC = False
 ```
 
 * `True` -> utilise `helias_async.py` (fluide, non bloquant, plus lent)
 * `False` -> utilise `helias.py` (simple, bloquant, plus rapide et reactif)
+
+### Ce mode async est déprécié car il n'a pas été MAJ selon les nouveaux changements de l'araignée finale donc les angles ne sont pas bon.
 
 ---
 
