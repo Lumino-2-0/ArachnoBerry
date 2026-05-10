@@ -15,7 +15,7 @@ Levee = 100
 # Patte 2 et 3 ont un offset vertical spécial
 Levee_Arriere = 0
 
-Time_Pause = 0.2 # Valeur par défaut (20 ms)
+Time_Pause = 0.2 # Valeur par défaut (200 ms)
 
 Double = False
 
