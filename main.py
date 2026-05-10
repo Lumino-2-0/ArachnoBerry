@@ -13,7 +13,8 @@ import socket
 from machine import Pin
 import time
 
-ASYNC = True
+ASYNC = False
+
 
 led = Pin("LED", Pin.OUT)   # OUT = sortie (on contrôle la LED)
 
@@ -50,6 +51,8 @@ def webpage():
         state = "ON"
     else:
         state = "OFF"
+        
+    double_state = "ON" if helias.Double else "OFF"
 
     html = f"""<!DOCTYPE html>
 <html lang="fr">
@@ -173,6 +176,7 @@ a {{
 
 <div class="card">
     <p>LED : <strong>{state}</strong></p>
+    <p>Mode Double : <strong>{double_state}</strong></p>
 </div>
 
 <!-- CONTROLES -->
@@ -194,12 +198,28 @@ a {{
     </div>
 </div>
 
+<div class="card">
+    <h3>Temps de pause</h3>
+
+    <input type="number" id="pauseTime" placeholder="Temps en ms" style="padding:10px; border-radius:10px; border:none; width:200px; font-size:16px;">
+    <div style="margin-top:10px;">
+        <button class="action" onclick="document.getElementById('pauseTime').value=10">10 ms</button>
+        <button class="action" onclick="document.getElementById('pauseTime').value=20">20 ms</button>
+        <button class="action" onclick="document.getElementById('pauseTime').value=50">50 ms</button>
+        <button class="action" onclick="document.getElementById('pauseTime').value=100">100 ms</button>
+    </div>
+        
+    <button class="action" style="margin-top:10px;" onclick="sendCommand('pauseTime=' + document.getElementById('pauseTime').value)">Envoyer</button>
+</div>
+
 <!-- ACTIONS -->
 <div class="card">
     <h3>Actions</h3>
 
     <button class="action" onclick="sendCommand('servo')">Test Servo</button>
     <button class="action" onclick="sendCommand('attack')">Attaque</button>
+    <button class="action" onclick="sendCommand('neutral')">Neutre</button>
+
 </div>
 
 <!-- LED -->
@@ -238,7 +258,7 @@ const PICO_IP = window.location.hostname;
 // ================= ANTI-SPAM =================
 let lastSentTime = 0;
 let lastCommand = "";
-const DELAY = 200; // 200ms
+const DELAY = 300; //ms
 
 function sendCommand(cmd) {{
     const now = Date.now();
@@ -291,10 +311,12 @@ function pollGamepad() {{
         else if (x < -0.5) sendCommand("left");
         else if (x > 0.5) sendCommand("right");
 
-        if (gp.buttons[0].pressed) sendCommand("attack");
-        if (gp.buttons[2].pressed) sendCommand("servo");
-        if (gp.buttons[3].pressed) sendCommand("ledon");
-        if (gp.buttons[1].pressed) sendCommand("ledoff");
+        if (gp.buttons[0].pressed) sendCommand("attack"); // bouton A
+        if (gp.buttons[2].pressed) sendCommand("servo"); // bouton X
+        if (gp.buttons[3].pressed) sendCommand("ledon"); // bouton Y
+        if (gp.buttons[1].pressed) sendCommand("ledoff"); // bouton B
+        if (gp.buttons[4].pressed) sendCommand("neutral"); // bouton Start
+
     }}
 
     requestAnimationFrame(pollGamepad);
@@ -310,10 +332,13 @@ pollGamepad();
 
 
 
-if (ASYNC):
-    from helias_async import backward, forward, turn_right, turn_left, attack, Servo_test 
-else :
-    from helias import backward, forward, turn_right, turn_left, attack, Servo_test 
+# if (ASYNC):
+#     from helias_async import backward, forward, turn_right, turn_left, attack, Servo_test 
+# else :
+#     from helias import backward, forward, turn_right, turn_left, attack, Servo_test 
+import helias
+from helias import backward, forward, turn_right, turn_left, attack, Servo_test, neutral
+print("Modules de contrôle importés")
 
 # ---------------------------------------------------------
 # CREATION DU SERVEUR WEB
@@ -322,10 +347,16 @@ else :
 # ---------------------------------------------------------
 
 addr = socket.getaddrinfo("0.0.0.0", 80)[0][-1]
+print("Adresse du serveur :", addr)
 
 server = socket.socket()
+print("Socket créé")
+
 server.bind(addr)
+print("Socket lié à l'adresse")
+
 server.listen(1)
+print("Socket en écoute")
 
 print("Serveur web en attente...")
 
@@ -382,6 +413,24 @@ while True:
     elif "attack" in request:
         print("Attaque !")
         attack()
+        
+    elif "neutral" in request:
+        print("Position neutre")
+        neutral()
+    
+    #Envoi de la pause au code helias avec une variable globale (Time_Pause) pour l'utiliser dans les fonctions de déplacement et d'attaque
+    elif "pauseTime=" in request:
+        try:
+            value = request.split("pauseTime=")[1].split(" ")[0]
+
+            helias.Time_Pause = int(value) / 1000
+
+            print(f"Pause définie à {helias.Time_Pause} secondes")
+
+        except Exception as e:
+            print("Erreur pause :", e)
+            
+    
         
     # -----------------------------------------------------
     # ENVOI DE LA PAGE HTML
