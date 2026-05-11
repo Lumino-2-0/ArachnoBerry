@@ -176,7 +176,6 @@ a {{
 
 <div class="card">
     <p>LED : <strong>{state}</strong></p>
-    <p>Mode Double : <strong>{double_state}</strong></p>
 </div>
 
 <!-- CONTROLES -->
@@ -196,6 +195,12 @@ a {{
         <button class="backward" onclick="sendCommand('backward')">↓</button>
         <div></div>
     </div>
+    <div>
+    <button class='action' onclick="sendCommand('Jump')">Sauter [A]</button>
+    <button class="action" onclick="sendCommand('attack_L')">Attaque Gauche [LB]</button>
+    <button class="action" onclick="sendCommand('attack_R')">Attaque Droite [RB]</button>
+    </div>
+
 </div>
 
 <div class="card">
@@ -216,9 +221,8 @@ a {{
 <div class="card">
     <h3>Actions</h3>
 
-    <button class="action" onclick="sendCommand('servo')">Test Servo</button>
-    <button class="action" onclick="sendCommand('attack')">Attaque</button>
-    <button class="action" onclick="sendCommand('neutral')">Neutre</button>
+    <button class="action" onclick="sendCommand('servo')">Test Servo [NE PAS FAIRE]</button>
+    <button class="action" onclick="sendCommand('neutral')">Neutre [B]</button>
 
 </div>
 
@@ -226,8 +230,8 @@ a {{
 <div class="card">
     <h3>LED</h3>
 
-    <button class="action led-on" onclick="sendCommand('ledon')">ON</button>
-    <button class="action led-off" onclick="sendCommand('ledoff')">OFF</button>
+    <button class="action led-on" onclick="sendCommand('ledon')">ON [X]</button>
+    <button class="action led-off" onclick="sendCommand('ledoff')">OFF [Y]</button>
 </div>
 
 <!-- JOYSTICK VISUEL -->
@@ -241,16 +245,7 @@ a {{
     <div class="status" id="status">Manette non détectée</div>
 </div>
 
-<!-- FOOTER -->
-<footer>
-    <p>ArachnoBerry Controller</p>
-    <p>
-        <a href="https://github.com/Lumino-2-0/ArachnoBerry" target="_blank">
-        GitHub Project
-        </a>
-    </p>
-    <p>DIY Spider Robot - Pico W - 2026</p>
-</footer>
+
 
 <script>
 const PICO_IP = window.location.hostname;
@@ -311,11 +306,13 @@ function pollGamepad() {{
         else if (x < -0.5) sendCommand("left");
         else if (x > 0.5) sendCommand("right");
 
-        if (gp.buttons[0].pressed) sendCommand("attack"); // bouton A
-        if (gp.buttons[2].pressed) sendCommand("servo"); // bouton X
-        if (gp.buttons[3].pressed) sendCommand("ledon"); // bouton Y
-        if (gp.buttons[1].pressed) sendCommand("ledoff"); // bouton B
-        if (gp.buttons[4].pressed) sendCommand("neutral"); // bouton Start
+        if (gp.buttons[0].pressed) sendCommand("Jump"); // bouton A
+        if (gp.buttons[2].pressed) sendCommand("ledon"); // bouton X
+        if (gp.buttons[3].pressed) sendCommand("ledoff"); // bouton Y
+        if (gp.buttons[1].pressed) sendCommand("neutral"); // bouton B
+        if (gp.buttons[4].pressed) sendCommand("attack_L"); // LB
+        if (gp.buttons[5].pressed) sendCommand("attack_R"); // RB
+        
 
     }}
 
@@ -337,7 +334,7 @@ pollGamepad();
 # else :
 #     from helias import backward, forward, turn_right, turn_left, attack, Servo_test 
 import helias
-from helias import backward, forward, turn_right, turn_left, attack, Servo_test, neutral
+from helias import backward, forward, turn_right, turn_left, Servo_test, neutral, Jump, attack_right, attack_left
 print("Modules de contrôle importés")
 
 # ---------------------------------------------------------
@@ -397,6 +394,10 @@ while True:
     elif "right" in request:
         print("Droite")
         turn_right()
+        
+    elif "Jump" in request:
+        print("Sauter")
+        Jump()
 
     elif "ledon" in request:
         led.value(1)
@@ -410,9 +411,13 @@ while True:
         print("test servomoteurs en cours")
         Servo_test()      
         
-    elif "attack" in request:
-        print("Attaque !")
-        attack()
+    elif "attack_R" in request:
+        print("Attaque Droite!")
+        attack_right()
+        
+    elif "attack_L" in request:
+        print("Attaque Gauche !")
+        attack_left()
         
     elif "neutral" in request:
         print("Position neutre")
@@ -429,6 +434,7 @@ while True:
 
         except Exception as e:
             print("Erreur pause :", e)
+
     
         
     # -----------------------------------------------------
